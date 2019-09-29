@@ -1,0 +1,46 @@
+---
+dist: "xenial"
+language: "python"
+before_install:
+    - "pip install python-coveralls tox-travis"
+
+install:
+    - "python setup.py install"
+
+after_success:
+    - "coveralls"
+
+deploy:
+  provider: "pypi"
+  distributions: "sdist bdist_wheel"
+  user: "cerberus1746"
+  skip_existing: true
+  on:
+    tags: true
+  password:
+    secure: "a2wIzaIWz2es16UbEbgn/asvN7gKFmxEDdaN/YHdRVoT79KNjgBIYqv2qOXyikzvEymOxsWazqhXrgwPXeBPSC0+kprV+++ZYIrVB9LmUKXgacmXrgLXOqyvcHPqWuQKNw3GLt6klXNsFNHZ43UAH8ogXRFVAs7+OV9b0ihrh11OXe6mjrUsSae9KlnBsKgxeN+YHIScZ7a4kJDfCjO1FZXDZ9Fk+H9AwYa6Q37r4aFngL4TYCIikRi2+f6rvIwR3RFXCV9X7y/OXBoe8d9ILOn86sfV4fup+1gIcvaJXxvoen+K6ydjWL2dV6Llm8Qi6xt4XhC93c4Juj+YzgCFKGs63E3ry+njLGE/dm4ef6dhbKrlUdP72ZluCXaAMXkvdhe07Fg3xnj5aQ68XjyuUjt66+JWLqMMzBLTYWkjqKMZEtfLSo8qRbQBr3Awy2h7x8yXld1ylTB/eDjCG1fiVScaUezni83hb4rYvd5GlonZvpPJ1rdjto4WNGVaZ4kHYXcNwrdIKS6krCmwWeWzcAYb5GmwcsGjymZaeleS8he1SguJId2LO/383JzrkGGMkKM84J3vdNsBA/KSXe6AoGlKQrZ3a4zPhfi6ImuYmvQRm/4oeWvyaeUxEjWrdSj6r6rV5CCrYxqTpUNDj1dAH4o6iJykqd0HzNkLBVxJpSA="
+
+matrix:
+  include:
+  - name: "Python 3.7"
+    dist: "xenial"
+    python:
+    - "3.7"
+    script:
+    - "tox"
+
+  - name: "Python 3.8"
+    dist: "xenial"
+    python:
+    - "3.8-dev"
+    script:
+    - "pip install -e .[tests]"
+    - "coverage run --source=panda_core_data setup.py pytest"
+
+  - name: "Python Nightly"
+    dist: "xenial"
+    python:
+    - "nightly"
+    script:
+    - "pip install -e .[tests]"
+    - "coverage run --source=panda_core_data setup.py pytest"

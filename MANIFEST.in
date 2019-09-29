@@ -1,0 +1,7 @@
+graft src
+include README.md
+include LICENSE
+
+include requirements-docs.txt
+include requirements-tests.txt
+include mypy.ini
