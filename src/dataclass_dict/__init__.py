@@ -4,7 +4,8 @@
 :created: 2019-09-28
 :author: Leandro (Cerberus1746) Benedet Garcia'''
 from collections.abc import MutableMapping, KeysView
-from dataclasses import _FIELDS, _POST_INIT_NAME, _process_class, field, InitVar, dataclass
+from dataclasses import (_FIELDS, _POST_INIT_NAME, _process_class, field, InitVar, dataclass,
+                         _get_field)
 from inspect import signature
 from typing import Optional, Any, Dict, Union, Type, List, Callable
 
@@ -67,10 +68,21 @@ class DataclassDict(MutableMapping, KeysView):
         if isinstance(key, int):
             key_name = self._mapping[key]
             self.__setitem__(key_name, value)
-        elif isinstance(key, str) and key in self:
-            setattr(self, key, value)
         else:
-            add_field(self, key, type(value), value)
+            setattr(self, key, value)
+
+    def __setattr__(self, key: Union[str, int], value: Any):
+        if key not in self:
+            field_type = type(value)
+            #pylint: disable=no-member
+            if key not in self.__dataclass_fields__:
+                #pylint: disable=no-member
+                self.__dataclass_fields__[key] = _get_field(self, key, field_type)
+
+            if key not in self.__annotations__:
+                self.__annotations__[key] = field_type
+
+        super().__setattr__(key, value)
 
     __contains__ = check_field
 

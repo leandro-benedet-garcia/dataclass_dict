@@ -1,4 +1,4 @@
-dataclass_dict
+dataclass_dict [![Build Status](https://travis-ci.org/Cerberus1746/dataclass_dict.svg?branch=master)](https://travis-ci.org/Cerberus1746/dataclass_dict)
 ===============
 With this package you are able to create a dataclass that works exactly like a dictionary.
 

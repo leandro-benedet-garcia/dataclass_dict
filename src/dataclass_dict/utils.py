@@ -8,15 +8,10 @@ from typing import Optional, Any, Type
 
 def add_field(dataclass_inst: object, field_name: str, field_type: Type[Any],
               field_value: Optional[Any] = None):
-    if not hasattr(dataclass_inst, field_name):
-        setattr(dataclass_inst, field_name, field_value)
-
-    if field_name not in dataclass_inst.__dataclass_fields__:
-        dataclass_inst.__dataclass_fields__[field_name] = _get_field(dataclass_inst, field_name,
-                                                                     field_type)
-
-    if field_name not in dataclass_inst.__annotations__:
-        dataclass_inst.__annotations__[field_name] = field_type
+    setattr(dataclass_inst, field_name, field_value)
+    dataclass_inst.__dataclass_fields__[field_name] = _get_field(dataclass_inst, field_name,
+                                                                 field_type)
+    dataclass_inst.__annotations__[field_name] = field_type
 
 def check_field(dataclass_inst: object, key: str) -> bool:
     return key in dataclass_inst.__dataclass_fields__

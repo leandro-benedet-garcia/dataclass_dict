@@ -8,8 +8,7 @@ from typing import MutableMapping, Dict, Any, Optional, List
 
 import pytest
 
-from dataclass_dict import DataclassDict
-from dataclass_dict.utils import delete_field
+from dataclass_dict import DataclassDict, delete_field, add_field
 
 
 TESTING_VALUES: Dict[str, Any] = {
@@ -20,6 +19,7 @@ TESTING_VALUES: Dict[str, Any] = {
 TEST_VALUES: List[Any] = list(TESTING_VALUES.values())
 SECOND_VALUE: str = "Another Test"
 THIRD_VALUE: int = 5
+FOURTH_VALUE: int = 10
 
 NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
 
@@ -84,16 +84,17 @@ def mapping_test(instanced):
 
     instanced["name"] = SECOND_VALUE
     instanced[1] = THIRD_VALUE
+    instanced.fourth = FOURTH_VALUE
 
     for key_name in instanced:
-        assert key_name in test_keys
+        assert key_name in test_keys + ["fourth"]
 
     for value in instanced.values():
         assert value in NEW_TEST_VALUES
 
     for key_name, value in instanced.items():
-        assert key_name in test_keys
-        assert value in NEW_TEST_VALUES
+        assert key_name in test_keys + ["fourth"]
+        assert value in NEW_TEST_VALUES + [FOURTH_VALUE]
 
     #pylint: disable=no-member
     assert instanced.name == SECOND_VALUE
@@ -104,12 +105,16 @@ def mapping_test(instanced):
 
     assert "new_field" in instanced
     assert instanced["new_field"] == "test"
-    assert len(instanced) == 2
+    assert len(instanced) == 3
 
     instanced.clear()
 
     #pylint: disable=len-as-condition
     assert len(instanced) == 0
+
+    add_field(instanced, "first", int, 10)
+    assert instanced["first"] == 10
+
 
 def test_mapping_exceptions():
     instanced: DataclassDict = DataclassDict(*TESTING_VALUES)
