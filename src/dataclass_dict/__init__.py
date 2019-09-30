@@ -1,11 +1,12 @@
 # type: ignore[attr-defined]
 '''
+
 :created: 2019-09-28
 :author: Leandro (Cerberus1746) Benedet Garcia'''
 from collections.abc import MutableMapping, KeysView
-from dataclasses import _FIELDS, _process_class, _POST_INIT_NAME, field, InitVar, dataclass
-from typing import Optional, Any, Dict, Union, Type, List, Callable
+from dataclasses import _FIELDS, _POST_INIT_NAME, _process_class, field, InitVar, dataclass
 from inspect import signature
+from typing import Optional, Any, Dict, Union, Type, List, Callable
 
 from .utils import delete_field, add_field, check_field
 
@@ -78,3 +79,5 @@ class DataclassDict(MutableMapping, KeysView):
     @property
     def _mapping(self):
         return list(self.__annotations__)
+
+__all__ = ("DataclassDict", "delete_field", "add_field", "check_field")

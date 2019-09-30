@@ -1,11 +1,12 @@
+# type: ignore
 '''
-:author: Leandro (Cerberus1746) Benedet Garcia
-'''
+:author: Leandro (Cerberus1746) Benedet Garcia'''
 import os
-import sys
 import re
+import sys
 
 import setuptools
+
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(CURRENT_DIR, "src"))
@@ -29,7 +30,7 @@ def stripped_file(file_name):
 def find_version():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     version_file = open_file(os.path.join(current_dir, "src", NAME, "__version__.py"))
-    version_match = re.search(r"^__version__\s*=\s*['\"]([^'\"]*)['\"]", version_file)
+    version_match = re.search(r"^__version__:\s*str\s*=\s*['\"]([^'\"]*)['\"]", version_file)
     return version_match.group(1)
 
 
@@ -38,6 +39,10 @@ if SPHINX_LOADED:
 
 __version__ = find_version()
 
+if sys.version_info >= (3, 6) and sys.version_info < (3, 7):
+    INSTALL_REQUIRES = ["dataclasses"]
+else:
+    INSTALL_REQUIRES = []
 
 LONG_DESCRIPTION = open_file("README.md")
 LICENSE = open_file("LICENSE")
@@ -55,7 +60,8 @@ setuptools.setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     license="MIT License",
-    python_requires=">=3.7",
+    install_requires=INSTALL_REQUIRES,
+    python_requires=">=3.6",
     url="https://github.com/Cerberus1746/PandaCoreData",
     tests_require=["pytest-runner"],
     packages=["src/" + NAME,],
@@ -65,6 +71,7 @@ setuptools.setup(
     },
     include_package_data=True,
     classifiers=[
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",

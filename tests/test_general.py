@@ -1,12 +1,10 @@
 # type: ignore[attr-defined]
 '''
 :created: 18-07-2019
-
 :author: Leandro (Cerberus1746) Benedet Garcia
 '''
 from dataclasses import field, InitVar
-from json import dumps
-from typing import MutableMapping, Dict, Any, Optional
+from typing import MutableMapping, Dict, Any, Optional, List
 
 import pytest
 
@@ -19,20 +17,15 @@ TESTING_VALUES: Dict[str, Any] = {
     "cur_value": 10
 }
 
-TEST_VALUES = list(TESTING_VALUES.values())
-SECOND_VALUE = "Another Test"
-THIRD_VALUE = 5
+TEST_VALUES: List[Any] = list(TESTING_VALUES.values())
+SECOND_VALUE: str = "Another Test"
+THIRD_VALUE: int = 5
 
-NEW_TEST_VALUES = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
-
-def test_instance_from_json():
-    json_str = dumps(TESTING_VALUES)
-    instanced = DataclassDict.from_json(json_str)
-    mapping_test(instanced)
+NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
 
 def test_mappings_with_post_init():
-    to_set_value = 9
-    sum_result = TESTING_VALUES["cur_value"] + TESTING_VALUES["cur_value"]
+    to_set_value: int = 9
+    sum_result: int = TESTING_VALUES["cur_value"] + TESTING_VALUES["cur_value"]
 
     class BaseDictWithPost(DataclassDict, dataclass_order=False):
         name: str
@@ -44,18 +37,18 @@ def test_mappings_with_post_init():
             self.auto_value = self.cur_value + self.cur_value
             self.to_set = to_set
 
-    instanced = BaseDictWithPost(**TESTING_VALUES, to_set=to_set_value)
+    instanced: BaseDictWithPost = BaseDictWithPost(**TESTING_VALUES, to_set=to_set_value)
 
     assert instanced.pop("auto_value") == sum_result
     assert instanced.pop("to_set") == to_set_value
 
     mapping_test(instanced)
 
-    instanced = BaseDictWithPost(*TEST_VALUES, to_set_value)
+    instanced: BaseDictWithPost = BaseDictWithPost(*TEST_VALUES, to_set_value)
     assert instanced.pop("auto_value") == sum_result
     assert instanced.pop("to_set") == to_set_value
 
-    instanced = BaseDictWithPost(*TEST_VALUES, to_set=to_set_value)
+    instanced: BaseDictWithPost = BaseDictWithPost(*TEST_VALUES, to_set=to_set_value)
     assert instanced.pop("auto_value") == sum_result
     assert instanced.pop("to_set") == to_set_value
 
@@ -73,7 +66,7 @@ def test_mappings_without_inherit():
 def mapping_test(instanced):
     assert isinstance(instanced, MutableMapping)
 
-    test_keys = list(TESTING_VALUES.keys())
+    test_keys: List[str] = list(TESTING_VALUES.keys())
 
     for key_name in instanced:
         assert key_name in test_keys
@@ -119,7 +112,7 @@ def mapping_test(instanced):
     assert len(instanced) == 0
 
 def test_mapping_exceptions():
-    instanced = DataclassDict(*TESTING_VALUES)
+    instanced: DataclassDict = DataclassDict(*TESTING_VALUES)
 
     with pytest.raises(IndexError):
         #pylint: disable=pointless-statement
