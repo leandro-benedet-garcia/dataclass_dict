@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 from dataclass_dict.__version__ import __version__
 
 # -- Project information -------------------------------------------------------
-project = 'PandaCoreData'
+project = 'dataclass_dict'
 copyright = '2019, Leandro (Cerberus1746) Benedet Garcia'
 author = 'Leandro (Cerberus1746) Benedet Garcia'
 version = __version__
@@ -47,6 +47,5 @@ html_static_path = ['_static']
 master_doc = 'index'
 
 intersphinx_mapping = {
-    'tinydb':  ('https://tinydb.readthedocs.io/en/latest/', None),
     'python':  ('https://docs.python.org/3/', None),
 }
