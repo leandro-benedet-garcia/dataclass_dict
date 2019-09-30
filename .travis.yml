@@ -1,14 +1,19 @@
 ---
 dist: "xenial"
 language: "python"
-sudo: false
 
 before_install:
-    - sudo add-apt-repository ppa:jonathonf/python-3.6 -y
-    - sudo apt-get update -q
-    - sudo apt-get install python3.6-dev
+    - sudo apt-get install g++
     - pip install -U pip
     - pip install -U python-coveralls tox-travis
+
+addons:
+    apt:
+        sources:
+            - sourceline: 'ppa:deadsnakes/ppa'
+        packages:
+            - python3.6  # To compile targets with a 3.6 compiler.
+            - python3.6-dev  # To build host extension modules under 3.6
 
 install:
     - pip install -e .
