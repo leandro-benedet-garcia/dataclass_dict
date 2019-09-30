@@ -5,11 +5,11 @@
 '''
 from dataclasses import field, InitVar
 from typing import MutableMapping, Dict, Any, Optional, List
+from json import dumps
 
 import pytest
 
-from dataclass_dict import DataclassDict, delete_field, add_field
-
+from dataclass_dict import DataclassDict, delete_field, add_field, dataclass_from_dict
 
 TESTING_VALUES: Dict[str, Any] = {
     "name": "testing",
@@ -22,6 +22,17 @@ THIRD_VALUE: int = 5
 FOURTH_VALUE: int = 10
 
 NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
+
+
+def test_json_input():
+    instanced = DataclassDict.from_json(dumps(TESTING_VALUES))
+    mapping_test(instanced)
+
+
+def test_dict_input():
+    instanced = DataclassDict.from_dict(TESTING_VALUES)
+    mapping_test(instanced)
+
 
 def test_mappings_with_post_init():
     to_set_value: int = 9
@@ -54,14 +65,13 @@ def test_mappings_with_post_init():
 
 
 def test_mappings_with_inherit():
+
     class BaseDict(DataclassDict):
         name: str
         cur_value: int
 
     mapping_test(BaseDict(**TESTING_VALUES))
 
-def test_mappings_without_inherit():
-    mapping_test(DataclassDict(**TESTING_VALUES))
 
 def mapping_test(instanced):
     assert isinstance(instanced, MutableMapping)
@@ -96,7 +106,7 @@ def mapping_test(instanced):
         assert key_name in test_keys + ["fourth"]
         assert value in NEW_TEST_VALUES + [FOURTH_VALUE]
 
-    #pylint: disable=no-member
+    # pylint: disable=no-member
     assert instanced.name == SECOND_VALUE
     assert instanced[0] == SECOND_VALUE
 
@@ -109,7 +119,7 @@ def mapping_test(instanced):
 
     instanced.clear()
 
-    #pylint: disable=len-as-condition
+    # pylint: disable=len-as-condition
     assert len(instanced) == 0
 
     add_field(instanced, "first", int, 10)
@@ -117,14 +127,17 @@ def mapping_test(instanced):
 
 
 def test_mapping_exceptions():
-    instanced: DataclassDict = DataclassDict(*TESTING_VALUES)
+    instanced: DataclassDict = dataclass_from_dict(TESTING_VALUES)
+
+    with pytest.raises(TypeError):
+        DataclassDict(**TESTING_VALUES)
 
     with pytest.raises(IndexError):
-        #pylint: disable=pointless-statement
+        # pylint: disable=pointless-statement
         instanced[9]
 
     with pytest.raises(KeyError):
-        #pylint: disable=pointless-statement
+        # pylint: disable=pointless-statement
         instanced["invalid"]
 
     with pytest.raises(AttributeError):

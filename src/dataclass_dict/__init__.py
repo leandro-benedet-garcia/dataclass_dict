@@ -1,45 +1,49 @@
 # type: ignore[attr-defined]
 '''
-
 :created: 2019-09-28
 :author: Leandro (Cerberus1746) Benedet Garcia'''
 from collections.abc import MutableMapping, KeysView
 from dataclasses import (_FIELDS, _POST_INIT_NAME, _process_class, field, InitVar, dataclass,
                          _get_field)
+from copy import deepcopy
 from inspect import signature
+from json import loads
 from typing import Optional, Any, Dict, Union, Type, List, Callable
 
-from .utils import delete_field, add_field, check_field
+from .utils import *
 
 
 class DataclassDict(MutableMapping, KeysView):
-    def __new__(cls: Type["DataclassDict"], *_: List[Any], **kwargs: Dict[str, Any]
-                ) -> "DataclassDict":
-        cls.__init_subclass__(**kwargs)
+    'The dataclass dict. It automatically transforms any class that inherits it into a dataclass.'
+
+    def __new__(cls, *_, **kwargs: Dict[str, Any]) -> "DataclassDict":
+        if not hasattr(cls, "dataclass_args"):
+            raise TypeError("You can't instance the class directly, you must inherit it first or "
+                            "use the function 'dataclass_from_dict' or 'dataclass_from_json'")
+
+        for cur_key, cur_value in kwargs.items():
+            if not hasattr(cls, cur_key):
+                setattr(cls, cur_key, cur_value)
+            if not hasattr(cls, "__annotations__"):
+                cls.__annotations__ = {}
+            if cur_key not in  cls.__annotations__:
+                cls.__annotations__[cur_key] = type(cur_value)
+        #pylint: disable=self-cls-assignment
+        cls = _process_class(cls, **cls.dataclass_args)
         return object.__new__(cls)
 
-    def __init_subclass__(cls: Type["DataclassDict"], **kwargs: Dict[str, Any]):
-        if not hasattr(cls, "dataclass_args"):
-            cls.dataclass_args = {}
-            for param_name, param in signature(dataclass).parameters.items():
-                # both cls and _cls are to avoid bugs with nightly version of python.
-                if param_name not in ["_cls", "cls"]:
-                    dt_param_name = "dataclass_" + param_name
+    def __init_subclass__(cls, **kwargs: Dict[str, Any]):
+        cls.dataclass_args = {}
+        for param_name, param in signature(dataclass).parameters.items():
+            # both cls and _cls are to avoid bugs with nightly version of python.
+            if param_name not in ["_cls", "cls"]:
+                dt_param_name = "dataclass_" + param_name
 
-                    if dt_param_name in kwargs:
-                        cls.dataclass_args[param_name] = kwargs.pop(dt_param_name, param.default)
-                    else:
-                        cls.dataclass_args[param_name] = kwargs.pop(param_name, param.default)
+                if dt_param_name in kwargs:
+                    cls.dataclass_args[param_name] = kwargs.pop(dt_param_name, param.default)
+                else:
+                    cls.dataclass_args[param_name] = kwargs.pop(param_name, param.default)
 
-            for cur_key, cur_value in kwargs.items():
-                if not hasattr(cls, cur_key):
-                    setattr(cls, cur_key, cur_value)
-                    if not hasattr(cls, "__annotations__"):
-                        cls.__annotations__ = {}
-                    cls.__annotations__[cur_key] = type(cur_value)
-
-            #pylint: disable=self-cls-assignment
-            cls = _process_class(cls, **cls.dataclass_args)
 
     def __getitem__(self, key: Union[int, str, slice]) -> Union[List[Any], Any]:
         if isinstance(key, int):
@@ -74,9 +78,9 @@ class DataclassDict(MutableMapping, KeysView):
     def __setattr__(self, key: Union[str, int], value: Any):
         if key not in self:
             field_type = type(value)
-            #pylint: disable=no-member
+            # pylint: disable=no-member
             if key not in self.__dataclass_fields__:
-                #pylint: disable=no-member
+                # pylint: disable=no-member
                 self.__dataclass_fields__[key] = _get_field(self, key, field_type)
 
             if key not in self.__annotations__:
@@ -90,6 +94,27 @@ class DataclassDict(MutableMapping, KeysView):
 
     @property
     def _mapping(self):
-        return list(self.__annotations__)
+        # pylint: disable=no-member
+        return list(self.__dataclass_fields__)
 
-__all__ = ("DataclassDict", "delete_field", "add_field", "check_field")
+    @staticmethod
+    def from_dict(input_dict):
+        return dataclass_from_dict(input_dict)
+
+    @staticmethod
+    def from_json(json_input):
+        return dataclass_from_json(json_input)
+
+
+def dataclass_from_dict(input_dict):
+    tmp_class = type("TmpClass", (DataclassDict,), input_dict)
+    return tmp_class(**input_dict)
+
+
+def dataclass_from_json(*args, **kwargs):
+    dumped_json = loads(*args, **kwargs)
+    return dataclass_from_dict(dumped_json)
+
+
+__all__ = ("DataclassDict", "add_field", "check_field", "dataclass_from_dict",
+           "dataclass_from_json", "delete_field")
