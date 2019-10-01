@@ -4,18 +4,22 @@
 :author: Leandro (Cerberus1746) Benedet Garcia
 '''
 from dataclasses import field, InitVar
-from json import dumps
+import json
+import os
 from typing import MutableMapping, Dict, Any, Optional, List
 
 import pytest
 
-from dataclass_dict import DataclassDict, delete_field, add_field, create_dataclass_dict
+from dataclass_dict import(DataclassDict, delete_field, add_field, create_dataclass_dict,
+                           dataclass_from_url)
 
+CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+SIMPLE_DATA = "raws/simple_data.json"
 
-TESTING_VALUES: Dict[str, Any] = {
-    "name": "testing",
-    "cur_value": 10
-}
+with open(os.path.join(CURRENT_PATH, SIMPLE_DATA), "r") as cur_file:
+    BASE_JSON = cur_file.read()
+
+TESTING_VALUES: Dict[str, Any] = json.loads(BASE_JSON)
 
 TEST_VALUES: List[Any] = list(TESTING_VALUES.values())
 SECOND_VALUE: str = "Another Test"
@@ -25,14 +29,32 @@ FOURTH_VALUE: int = 10
 NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
 
 
+def test_iter_field():
+    iter_list = ["Foo", "Bar"]
+    instance = create_dataclass_dict(names=iter_list)
+    assert instance.names == iter_list  #pylint: disable=no-member
+
+def test_open_from_url(httpserver):
+    httpserver.serve_content(BASE_JSON)
+    server_url = httpserver.url
+    result = dataclass_from_url(server_url)
+
+    mapping_test(result)
+
+    result = dataclass_from_url(server_url, server_url)
+    for current in result:
+        mapping_test(current)
+
+
 def test_json_input():
-    instanced = DataclassDict.from_json(dumps(TESTING_VALUES))
+    instanced = DataclassDict.from_json(BASE_JSON)
     mapping_test(instanced)
 
 
 def test_dict_input():
     instanced = DataclassDict.create_new(TESTING_VALUES)
     mapping_test(instanced)
+
 
 def test_simple_input():
     instanced = DataclassDict.create_new(**TESTING_VALUES)
@@ -129,7 +151,6 @@ def mapping_test(instanced):
 
     add_field(instanced, "first", int, 10)
     assert instanced["first"] == 10
-
 
 def test_mapping_exceptions():
     instanced: DataclassDict = create_dataclass_dict(TESTING_VALUES)

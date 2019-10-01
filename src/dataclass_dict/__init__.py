@@ -3,12 +3,12 @@
 :created: 2019-09-28
 :author: Leandro (Cerberus1746) Benedet Garcia'''
 from collections.abc import MutableMapping, KeysView
-from dataclasses import (_FIELDS, _POST_INIT_NAME, _process_class, _get_field, field, InitVar,
-                         dataclass)
+from dataclasses import _FIELDS, _POST_INIT_NAME, _process_class, field, InitVar, dataclass
 from inspect import signature
 from json import loads
 from typing import Optional, Any, Dict, Union, Type, List, Callable
 
+from .threaded_request import load_json_from_url
 from .utils import *
 
 
@@ -22,15 +22,21 @@ class DataclassDict(MutableMapping, KeysView):
                             "'dataclass_from_json'")
 
         for cur_key, cur_value in kwargs.items():
-            if not hasattr(cls, cur_key):
-                setattr(cls, cur_key, cur_value)
+            cur_type = type(cur_value)
             if not hasattr(cls, "__annotations__"):
                 cls.__annotations__ = {}
+
             if cur_key not in  cls.__annotations__:
-                cls.__annotations__[cur_key] = type(cur_value)
+                cls.__annotations__[cur_key] = cur_type
+
+            if cur_type in (dict, list, set):
+                created_field = field(default_factory=cur_type)
+                setattr(cls, cur_key, created_field)
 
         # pylint: disable=self-cls-assignment,no-member
         cls = _process_class(cls, **cls.dataclass_args)
+        for cur_key, cur_value in kwargs.items():
+            setattr(cls, cur_key, cur_value)
         return object.__new__(cls)
 
     def __init_subclass__(cls, **kwargs: Dict[str, Any]):
@@ -71,8 +77,16 @@ class DataclassDict(MutableMapping, KeysView):
             field_type = type(value)
             # pylint: disable=no-member
             if key not in self.__dataclass_fields__:
+                created_field = field()
+                created_field.name = key
+
+                if field_type in (dict, str, set):
+                    created_field.default_factory = field_type
+
+                created_field.type = field_type
+
                 # pylint: disable=no-member
-                self.__dataclass_fields__[key] = _get_field(self, key, field_type)
+                self.__dataclass_fields__[key] = created_field
 
             if key not in self.__annotations__:
                 self.__annotations__[key] = field_type
@@ -96,6 +110,7 @@ class DataclassDict(MutableMapping, KeysView):
     def from_json(json_input):
         return dataclass_from_json(json_input)
 
+
 def _dataclass_dict(cls, **kwargs):
     cls.dataclass_args = {}
     for param_name, param in signature(dataclass).parameters.items():
@@ -108,6 +123,7 @@ def _dataclass_dict(cls, **kwargs):
             else:
                 cls.dataclass_args[param_name] = kwargs.pop(param_name, param.default)
     return cls
+
 
 def create_dataclass_dict(input_dict=None, **kwargs):
     if not input_dict:
@@ -122,5 +138,17 @@ def dataclass_from_json(*args, **kwargs):
     return create_dataclass_dict(dumped_json)
 
 
-__all__ = ("DataclassDict", "add_field", "check_field", "create_dataclass_dict", "delete_field",
-           "dataclass_from_json")
+def dataclass_from_url(*args, **kwargs):
+    returned_json = load_json_from_url(*args, **kwargs)
+
+    if isinstance(returned_json, list):
+        returned_dict_data = []
+        for opened_json in returned_json:
+            returned_dict_data.append(create_dataclass_dict(opened_json))
+        return returned_dict_data
+
+    return create_dataclass_dict(returned_json)
+
+
+__all__ = ("DataclassDict", "add_field", "check_field", "create_dataclass_dict",
+           "dataclass_from_json", "delete_field", "load_json_from_url")
