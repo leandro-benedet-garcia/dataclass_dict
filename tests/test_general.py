@@ -4,12 +4,13 @@
 :author: Leandro (Cerberus1746) Benedet Garcia
 '''
 from dataclasses import field, InitVar
-from typing import MutableMapping, Dict, Any, Optional, List
 from json import dumps
+from typing import MutableMapping, Dict, Any, Optional, List
 
 import pytest
 
-from dataclass_dict import DataclassDict, delete_field, add_field, dataclass_from_dict
+from dataclass_dict import DataclassDict, delete_field, add_field, create_dataclass_dict
+
 
 TESTING_VALUES: Dict[str, Any] = {
     "name": "testing",
@@ -30,7 +31,11 @@ def test_json_input():
 
 
 def test_dict_input():
-    instanced = DataclassDict.from_dict(TESTING_VALUES)
+    instanced = DataclassDict.create_new(TESTING_VALUES)
+    mapping_test(instanced)
+
+def test_simple_input():
+    instanced = DataclassDict.create_new(**TESTING_VALUES)
     mapping_test(instanced)
 
 
@@ -127,7 +132,7 @@ def mapping_test(instanced):
 
 
 def test_mapping_exceptions():
-    instanced: DataclassDict = dataclass_from_dict(TESTING_VALUES)
+    instanced: DataclassDict = create_dataclass_dict(TESTING_VALUES)
 
     with pytest.raises(TypeError):
         DataclassDict(**TESTING_VALUES)

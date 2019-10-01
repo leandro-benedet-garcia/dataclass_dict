@@ -3,9 +3,8 @@
 :created: 2019-09-28
 :author: Leandro (Cerberus1746) Benedet Garcia'''
 from collections.abc import MutableMapping, KeysView
-from dataclasses import (_FIELDS, _POST_INIT_NAME, _process_class, field, InitVar, dataclass,
-                         _get_field)
-from copy import deepcopy
+from dataclasses import (_FIELDS, _POST_INIT_NAME, _process_class, _get_field, field, InitVar,
+                         dataclass)
 from inspect import signature
 from json import loads
 from typing import Optional, Any, Dict, Union, Type, List, Callable
@@ -19,7 +18,8 @@ class DataclassDict(MutableMapping, KeysView):
     def __new__(cls, *_, **kwargs: Dict[str, Any]) -> "DataclassDict":
         if not hasattr(cls, "dataclass_args"):
             raise TypeError("You can't instance the class directly, you must inherit it first or "
-                            "use the function 'dataclass_from_dict' or 'dataclass_from_json'")
+                            "use the function 'create_dataclass_dict', 'dataclass_from_dict' or"
+                            "'dataclass_from_json'")
 
         for cur_key, cur_value in kwargs.items():
             if not hasattr(cls, cur_key):
@@ -28,22 +28,13 @@ class DataclassDict(MutableMapping, KeysView):
                 cls.__annotations__ = {}
             if cur_key not in  cls.__annotations__:
                 cls.__annotations__[cur_key] = type(cur_value)
-        #pylint: disable=self-cls-assignment
+
+        # pylint: disable=self-cls-assignment,no-member
         cls = _process_class(cls, **cls.dataclass_args)
         return object.__new__(cls)
 
     def __init_subclass__(cls, **kwargs: Dict[str, Any]):
-        cls.dataclass_args = {}
-        for param_name, param in signature(dataclass).parameters.items():
-            # both cls and _cls are to avoid bugs with nightly version of python.
-            if param_name not in ["_cls", "cls"]:
-                dt_param_name = "dataclass_" + param_name
-
-                if dt_param_name in kwargs:
-                    cls.dataclass_args[param_name] = kwargs.pop(dt_param_name, param.default)
-                else:
-                    cls.dataclass_args[param_name] = kwargs.pop(param_name, param.default)
-
+        _dataclass_dict(cls, **kwargs)
 
     def __getitem__(self, key: Union[int, str, slice]) -> Union[List[Any], Any]:
         if isinstance(key, int):
@@ -98,23 +89,38 @@ class DataclassDict(MutableMapping, KeysView):
         return list(self.__dataclass_fields__)
 
     @staticmethod
-    def from_dict(input_dict):
-        return dataclass_from_dict(input_dict)
+    def create_new(*args, **kwargs):
+        return create_dataclass_dict(*args, **kwargs)
 
     @staticmethod
     def from_json(json_input):
         return dataclass_from_json(json_input)
 
+def _dataclass_dict(cls, **kwargs):
+    cls.dataclass_args = {}
+    for param_name, param in signature(dataclass).parameters.items():
+        # both cls and _cls are to avoid bugs with nightly version of python.
+        if param_name not in ["_cls", "cls"]:
+            dt_param_name = "dataclass_" + param_name
 
-def dataclass_from_dict(input_dict):
-    tmp_class = type("TmpClass", (DataclassDict,), input_dict)
+            if dt_param_name in kwargs:
+                cls.dataclass_args[param_name] = kwargs.pop(dt_param_name, param.default)
+            else:
+                cls.dataclass_args[param_name] = kwargs.pop(param_name, param.default)
+    return cls
+
+def create_dataclass_dict(input_dict=None, **kwargs):
+    if not input_dict:
+        input_dict = dict(**kwargs)
+
+    tmp_class = type("GeneratedDataclassDict", (DataclassDict,), input_dict)
     return tmp_class(**input_dict)
 
 
 def dataclass_from_json(*args, **kwargs):
     dumped_json = loads(*args, **kwargs)
-    return dataclass_from_dict(dumped_json)
+    return create_dataclass_dict(dumped_json)
 
 
-__all__ = ("DataclassDict", "add_field", "check_field", "dataclass_from_dict",
-           "dataclass_from_json", "delete_field")
+__all__ = ("DataclassDict", "add_field", "check_field", "create_dataclass_dict", "delete_field",
+           "dataclass_from_json")
