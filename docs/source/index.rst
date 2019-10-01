@@ -36,10 +36,40 @@ Also, you can automatically generate a dataclass with a json like this:
 Keep in mind that all parameters from the function :func:`json.dumps` works with the
 :func:`dataclass_from_json` so you can write special parsers.
 
+API Reference
+==============
+Dataclass Dict
+---------------
+.. automodule:: dataclass_dict
+    :members:
+    :private-members:
+    :special-members:
+    :show-inheritance:
+    :exclude-members: __weakref__
+
+Threading
+----------
+.. automodule:: dataclass_dict.threaded_request
+    :members:
+    :private-members:
+    :special-members:
+    :show-inheritance:
+    :exclude-members: __weakref__
+
+Utils
+------
+.. automodule:: dataclass_dict.utils
+    :members:
+    :private-members:
+    :special-members:
+    :show-inheritance:
+    :exclude-members: __weakref__
+
+
 Changelogs
 ===========
 0.0.1
-######
-Added
 ------
+Added
+^^^^^^
 - Package released

@@ -4,7 +4,6 @@ from threading import Thread
 from typing import Any, Dict, List, Union
 from urllib.request import urlopen
 
-
 JsonObj = Dict[str, Any]
 JsonType = Union[List[Union[JsonObj, Any]], JsonObj]
 
@@ -18,6 +17,9 @@ class ThreadedGetData(Thread):
     started: bool
 
     def __init__(self, url: str, **kwargs):
+        """Prepare the thread to be executed
+
+        :param url: The url to be loaded."""
         self.url = url
 
         self.started = False
@@ -27,6 +29,7 @@ class ThreadedGetData(Thread):
 
     @classmethod
     def start_loop(cls):
+        'Load all urls and register them on their data attributes'
         for cur_thread in cls.registered_threads:
             if not cur_thread.already_run:
                 cur_thread.start()
@@ -47,21 +50,28 @@ class ThreadedGetData(Thread):
         ThreadedGetData.open_threads.remove(self)
 
     def from_json(self, **kwargs):
+        'Transform json data into a dictionary'
         return json.load(self.data, **kwargs)
 
 
-def load_url(*args: str) -> List[ThreadedGetData]:
+def load_url(*urls: str) -> List[ThreadedGetData]:
+    '''Load one or more urls executing them from threads
+
+    :param urls: one or more urls to be loaded'''
     all_threads = []
-    for cur_url in args:
+    for cur_url in urls:
         all_threads.append(ThreadedGetData(cur_url))
 
     ThreadedGetData.start_loop()
     return all_threads
 
 
-def load_json_from_url(*args: str, **kwargs: Any) -> Union[JsonType, List[JsonType]]:
+def load_json_from_url(*urls: str, **kwargs: Any) -> Union[JsonType, List[JsonType]]:
+    '''Load one or more json from the urls
+
+    :param urls: one or more urls to be loaded'''
     output_list = []
-    for current_thread in load_url(*args):
+    for current_thread in load_url(*urls):
         output_list.append(current_thread.from_json(**kwargs))
     return output_list[0] if len(output_list) == 1 else output_list
 

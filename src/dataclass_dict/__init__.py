@@ -150,5 +150,5 @@ def dataclass_from_url(*args, **kwargs):
     return create_dataclass_dict(returned_json)
 
 
-__all__ = ("DataclassDict", "add_field", "check_field", "create_dataclass_dict",
-           "dataclass_from_json", "delete_field", "load_json_from_url")
+__all__ = ("DataclassDict", "add_field", "check_field", "delete_field", "create_dataclass_dict",
+           "dataclass_from_json", "load_json_from_url")
