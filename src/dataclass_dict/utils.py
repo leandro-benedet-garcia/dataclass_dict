@@ -43,7 +43,7 @@ def delete_field(dataclass_inst: object, field_name: str, default: Optional[Any]
         delattr(dataclass_inst, field_name)
         return cur_value
 
-    if default:
+    if default is not None:
         return default
     raise KeyError(field_name)
 

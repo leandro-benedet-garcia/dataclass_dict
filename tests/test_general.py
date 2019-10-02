@@ -151,6 +151,7 @@ def mapping_test(instanced):
 
     add_field(instanced, "first", int, 10)
     assert instanced["first"] == 10
+    assert instanced.pop("invalid", False) is False
 
 def test_mapping_exceptions():
     instanced: DataclassDict = create_dataclass_dict(TESTING_VALUES)
@@ -166,5 +167,5 @@ def test_mapping_exceptions():
         # pylint: disable=pointless-statement
         instanced["invalid"]
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(KeyError):
         delete_field(instanced, "invalid")
