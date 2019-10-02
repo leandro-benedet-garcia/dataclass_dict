@@ -8,7 +8,7 @@ it will uses the dataclass package from pypi.
 
 To use this package you may run the following command:
 ```
-pip install git+https://github.com/Cerberus1746/dataclass_dict.git
+pip install dataclass-dict
 ```
 
 # How to Collaborate
