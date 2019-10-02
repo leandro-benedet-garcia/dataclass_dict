@@ -24,5 +24,6 @@ deploy:
     distributions: "sdist bdist_wheel"
     user: "cerberus1746"
     skip_existing: true
+    edge: true
     on:
         tags: true
