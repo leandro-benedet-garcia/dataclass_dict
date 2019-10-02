@@ -68,6 +68,15 @@ Utils
 
 Changelogs
 ===========
+0.0.1.1
+------
+Added
+^^^^^^
+- Added Tidelif information in the readme
+Fixed
+^^^^^^
+- Fixed informations in the `setup.py` file such as descriptions and repository link.
+
 0.0.1
 ------
 Added

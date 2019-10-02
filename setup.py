@@ -56,13 +56,14 @@ setuptools.setup(
     cmdclass=CMDCLASS if SPHINX_LOADED else {},
     author="Leandro (Cerberus1746) Benedet Garcia",
     author_email="leandro.benedet.garcia@gmail.com",
-    description="Data management system using plain text files like json and yaml.",
+    description="With this package you are able to create a dataclass that works exactly like a "
+                "dictionary.",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     license="MIT License",
     install_requires=INSTALL_REQUIRES,
     python_requires=">=3.6",
-    url="https://github.com/Cerberus1746/PandaCoreData",
+    url="https://github.com/Cerberus1746/" + NAME,
     tests_require=["pytest-runner"],
     packages=["src/" + NAME,],
     extras_require={

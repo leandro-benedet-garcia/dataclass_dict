@@ -16,6 +16,10 @@ If you want to help with the development of this library, I would say that I lov
 fiancee would get jealous, so I will just say thank you :D
 
 ## By throwing money at the screen
+- **Tidelif**: We are on Tidelift! So you can get some technical support from them, and they help us.
+  It's a win win! If you are interested,
+  [click here](https://tidelift.com/subscription/pkg/pypi-dataclass-dict?utm_source=pypi-dataclass-dict&utm_medium=referral&utm_campaign=readme)
+  (we get some help if you use this referal link too~)
 - **Patreon**: If you want to help us every month, you can help us by checking our patreon page
   [here](https://www.patreon.com/project_chrysalis)
 - **Ko-fi**: Do you like Coffee, I love coffee, if you want to send a tip for a coffee, you can do
@@ -53,3 +57,8 @@ And then generate the docs with the command:
 python setup.py build_sphinx
 ```
 The docs will be located by default inside the directory `docs/build/html`
+
+# Security contact information
+To report a security vulnerability, please use the
+[Tidelift security contact](https://tidelift.com/security). Tidelift will coordinate the fix and
+disclosure.
