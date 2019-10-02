@@ -13,6 +13,7 @@ import pytest
 from dataclass_dict import(DataclassDict, delete_field, add_field, create_dataclass_dict,
                            dataclass_from_url)
 
+
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 SIMPLE_DATA = "raws/simple_data.json"
 
@@ -32,7 +33,8 @@ NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
 def test_iter_field():
     iter_list = ["Foo", "Bar"]
     instance = create_dataclass_dict(names=iter_list)
-    assert instance.names == iter_list  #pylint: disable=no-member
+    assert instance.names == iter_list  # pylint: disable=no-member
+
 
 def test_open_from_url(httpserver):
     httpserver.serve_content(BASE_JSON)
@@ -152,6 +154,7 @@ def mapping_test(instanced):
     add_field(instanced, "first", int, 10)
     assert instanced["first"] == 10
     assert instanced.pop("invalid", False) is False
+
 
 def test_mapping_exceptions():
     instanced: DataclassDict = create_dataclass_dict(TESTING_VALUES)
