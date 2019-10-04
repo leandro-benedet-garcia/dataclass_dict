@@ -22,7 +22,7 @@ script:
     - tox
 
 after_script:
-  - ./cc-test-reporter format-coverage .coverage -t coverage.py
+  - ./cc-test-reporter format-coverage coverage.xml -t coverage.py
   - ./cc-test-reporter upload-coverage
 
 deploy:
