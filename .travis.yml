@@ -22,7 +22,7 @@ script:
     - tox
 
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t coverage.py
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t coverage.py --file .coverage
 
 deploy:
     provider: "pypi"
