@@ -1,4 +1,4 @@
-dataclass_dict [![Build Status](https://travis-ci.org/Cerberus1746/dataclass_dict.svg?branch=master)](https://travis-ci.org/Cerberus1746/dataclass_dict) [![Documentation Status](https://readthedocs.org/projects/dataclass-dict/badge/?version=latest)](https://dataclass-dict.readthedocs.io/en/latest/?badge=latest)
+dataclass_dict [![Build Status](https://travis-ci.org/Cerberus1746/dataclass_dict.svg?branch=master)](https://travis-ci.org/Cerberus1746/dataclass_dict) [![Documentation Status](https://readthedocs.org/projects/dataclass-dict/badge/?version=latest)](https://dataclass-dict.readthedocs.io/en/latest/?badge=latest) [![Maintainability](https://api.codeclimate.com/v1/badges/6373c7712a3a29353842/maintainability)](https://codeclimate.com/github/Cerberus1746/dataclass_dict/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/6373c7712a3a29353842/test_coverage)](https://codeclimate.com/github/Cerberus1746/dataclass_dict/test_coverage)
 ===============
 With this package you are able to create a dataclass that works exactly like a dictionary.
 
