@@ -33,8 +33,18 @@ Also, you can automatically generate a dataclass with a json like this:
 
     instance = dataclass_from_json(json_code)
 
+
+If you'd like, you can load a json file straight from a url like this:
+
+.. code:: python
+
+    from dataclass_dict import dataclass_from_url
+
+    dataclass_from_url("json_url")
+
+
 Keep in mind that all parameters from the function :func:`json.dumps` works with the
-:func:`dataclass_from_json` so you can write special parsers.
+:func:`dataclass_from_json` and `dataclass_from_url` so you can write special parsers.
 
 API Reference
 ==============
