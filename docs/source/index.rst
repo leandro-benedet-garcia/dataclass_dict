@@ -42,9 +42,18 @@ If you'd like, you can load a json file straight from a url like this:
 
     dataclass_from_url("json_url")
 
+Plus, if you pass multiple parameters this way:
+
+.. code:: python
+
+    from dataclass_dict import dataclass_from_url
+
+    dataclass_from_url("json_url_1", "json_url_2")
+
+They will be downloaded at the same time using threads.
 
 Keep in mind that all parameters from the function :func:`json.dumps` works with the
-:func:`dataclass_from_json` and `dataclass_from_url` so you can write special parsers.
+:func:`dataclass_from_json` and :func:`dataclass_from_url` so you can write special parsers.
 
 API Reference
 ==============
