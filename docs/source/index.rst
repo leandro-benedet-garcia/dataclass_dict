@@ -95,8 +95,11 @@ Changed
   normally
 Fixed
 ^^^^^^
-- :meth:`~dataclass_dict.__new__` and :meth:`~dataclass_dict.__init_subclass__` now calls their
+- :meth:`~dataclass_dict.DataclassDict.__new__` and
+  :meth:`~dataclass_dict.DataclassDict.__init_subclass__` now calls their
   parents with :func:`super`
+- If a class inherited :class:`~dataclass_dict.DataclassDict` and it didn't have a field with
+  annotations, it would raise an error. That's fixed now.
 
 0.0.1.1
 ------
