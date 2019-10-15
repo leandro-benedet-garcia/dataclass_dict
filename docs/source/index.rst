@@ -87,6 +87,17 @@ Utils
 
 Changelogs
 ===========
+0.0.2
+------
+Changed
+^^^^^^
+- Any attribute starting with a `_` will not be added to the dataclass, but will be available
+  normally
+Fixed
+^^^^^^
+- :meth:`~dataclass_dict.__new__` and :meth:`~dataclass_dict.__init_subclass__` now calls their
+  parents with :func:`super`
+
 0.0.1.1
 ------
 Added

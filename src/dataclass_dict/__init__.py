@@ -21,10 +21,10 @@ class DataclassDict(MutableMapping, KeysView):
                             "use the function 'create_dataclass_dict', 'dataclass_from_dict' or"
                             "'dataclass_from_json'")
 
+        if not hasattr(cls, "__annotations__"):
+            cls.__annotations__ = {}
         for cur_key, cur_value in kwargs.items():
             cur_type = type(cur_value)
-            if not hasattr(cls, "__annotations__"):
-                cls.__annotations__ = {}
 
             if cur_key not in  cls.__annotations__:
                 cls.__annotations__[cur_key] = cur_type
@@ -37,10 +37,20 @@ class DataclassDict(MutableMapping, KeysView):
         cls = _process_class(cls, **cls.dataclass_args)
         for cur_key, cur_value in kwargs.items():
             setattr(cls, cur_key, cur_value)
-        return object.__new__(cls)
+        return super().__new__(cls)
 
     def __init_subclass__(cls, **kwargs: Dict[str, Any]):
-        _dataclass_dict(cls, **kwargs)
+        cls.dataclass_args = {}
+        for param_name, param in signature(dataclass).parameters.items():
+            # both cls and _cls are to avoid bugs with nightly version of python.
+            if param_name not in ["_cls", "cls"]:
+                dt_param_name = "dataclass_" + param_name
+
+                if dt_param_name in kwargs:
+                    cls.dataclass_args[param_name] = kwargs.pop(dt_param_name, param.default)
+                else:
+                    cls.dataclass_args[param_name] = kwargs.pop(param_name, param.default)
+        super().__init_subclass__(**kwargs)
 
     def __getitem__(self, key: Union[int, str, slice]) -> Union[List[Any], Any]:
         if isinstance(key, int):
@@ -73,7 +83,7 @@ class DataclassDict(MutableMapping, KeysView):
             setattr(self, key, value)
 
     def __setattr__(self, key: Union[str, int], value: Any):
-        if key not in self:
+        if key[0] != "_" and key not in self:
             field_type = type(value)
             # pylint: disable=no-member
             if key not in self.__dataclass_fields__:
@@ -94,8 +104,7 @@ class DataclassDict(MutableMapping, KeysView):
         super().__setattr__(key, value)
 
     __contains__ = check_field
-
-    pop = __delitem__ = delete_field
+    __delitem__ = pop = delete_field
 
     @property
     def _mapping(self):
@@ -109,20 +118,6 @@ class DataclassDict(MutableMapping, KeysView):
     @staticmethod
     def from_json(json_input):
         return dataclass_from_json(json_input)
-
-
-def _dataclass_dict(cls, **kwargs):
-    cls.dataclass_args = {}
-    for param_name, param in signature(dataclass).parameters.items():
-        # both cls and _cls are to avoid bugs with nightly version of python.
-        if param_name not in ["_cls", "cls"]:
-            dt_param_name = "dataclass_" + param_name
-
-            if dt_param_name in kwargs:
-                cls.dataclass_args[param_name] = kwargs.pop(dt_param_name, param.default)
-            else:
-                cls.dataclass_args[param_name] = kwargs.pop(param_name, param.default)
-    return cls
 
 
 def create_dataclass_dict(input_dict=None, **kwargs):
