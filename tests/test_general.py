@@ -99,7 +99,7 @@ def test_mappings_with_post_init():
     to_set_value: int = 9
     sum_result: int = TESTING_VALUES["cur_value"] + TESTING_VALUES["cur_value"]
 
-    class BaseDictWithPost(DataclassDict, dataclass_order=False):
+    class BaseDictWithPost(DataclassDict, dataclass_repr=True):
         name: str
         cur_value: int
         auto_value: Optional[int] = field(init=False)
