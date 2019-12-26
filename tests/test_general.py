@@ -1,4 +1,5 @@
 # type: ignore[attr-defined]
+# pylint: disable=protected-access
 '''
 :created: 18-07-2019
 :author: Leandro (Cerberus1746) Benedet Garcia
@@ -11,7 +12,7 @@ from typing import MutableMapping, Dict, Any, Optional, List
 import pytest
 
 from dataclass_dict import(DataclassDict, delete_field, add_field, create_dataclass_dict,
-                           dataclass_from_url)
+                           dataclass_from_url, item_zip)
 
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -29,6 +30,16 @@ FOURTH_VALUE: int = 10
 
 NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
 
+def test_iterzip():
+    first_dict = {"first": 1}
+    second_dict = {"second": 2}
+
+    for first_key, first_var, second_key, second_var in item_zip(first_dict, second_dict):
+        assert first_key == "first"
+        assert first_var == 1
+
+        assert second_key == "second"
+        assert second_var == 2
 
 def test_iter_field():
     iter_list = ["Foo", "Bar"]
@@ -62,6 +73,27 @@ def test_simple_input():
     instanced = DataclassDict.create_new(**TESTING_VALUES)
     mapping_test(instanced)
 
+def test_ignore_underline():
+    class BaseDictWithPost(DataclassDict):
+        _name: str
+
+    instanced = BaseDictWithPost()
+
+    assert isinstance(instanced, BaseDictWithPost)
+    assert "_name" not in instanced
+
+    instanced._name = "hidden"
+
+    assert hasattr(instanced, "_name")
+    assert instanced._name == "hidden"
+    assert "_name" not in instanced
+
+    #pylint: disable=attribute-defined-outside-init
+    instanced._new_hidden = "still_hidden"
+
+    assert hasattr(instanced, "_new_hidden")
+    assert instanced._new_hidden == "still_hidden"
+    assert "_new_hidden" not in instanced
 
 def test_mappings_with_post_init():
     to_set_value: int = 9

@@ -33,10 +33,21 @@ class DataclassDict(MutableMapping, KeysView):
                 created_field = field(default_factory=cur_type)
                 setattr(cls, cur_key, created_field)
 
+        # Even if the class has an annotated attribute, It should not appear in the dataclass at all
+        # if it starts with `_`
+        # Hence why we are saving a copy of the annotations and filtering out any variable starting
+        # with underline and then putting the annotation back
+        original_annotations = cls.__annotations__
+        cls.__annotations__ = dict(filter(lambda x: x[0][0] != "_", original_annotations.items()))
+
         # pylint: disable=self-cls-assignment,no-member
         cls = _process_class(cls, **cls.dataclass_args)
+
+        cls.__annotations__ = original_annotations
+
         for cur_key, cur_value in kwargs.items():
             setattr(cls, cur_key, cur_value)
+
         return super().__new__(cls)
 
     def __init_subclass__(cls, **kwargs: Dict[str, Any]):

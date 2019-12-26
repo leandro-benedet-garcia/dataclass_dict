@@ -39,10 +39,17 @@ if SPHINX_LOADED:
 
 __version__ = find_version()
 
+INSTALL_REQUIRES = []
+
+if sys.version_info < (3, 6):
+    raise type("InvalidVersionError", (Exception,), {})("You must use python 3.6 or more to be "
+                                                        "able to use this package")
+
 if sys.version_info >= (3, 6) and sys.version_info < (3, 7):
-    INSTALL_REQUIRES = ["dataclasses"]
-else:
-    INSTALL_REQUIRES = []
+    INSTALL_REQUIRES.append("dataclasses")
+
+if sys.version_info >= (3, 6) and sys.version_info < (3, 8):
+    INSTALL_REQUIRES.append("typing-extensions")
 
 LONG_DESCRIPTION = open_file("README.md")
 LICENSE = open_file("LICENSE")

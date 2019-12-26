@@ -47,5 +47,22 @@ def delete_field(dataclass_inst: object, field_name: str, default: Optional[Any]
         return default
     raise KeyError(field_name)
 
+def item_zip(*dicts_input):
+    '''Function to iterate across multiple dictionaries
 
-__all__ = ("add_field", "check_field", "delete_field",)
+    An example in how to use this function is:
+
+    .. code:: python
+
+        first_dict = {"first": 1}
+        second_dict = {"second": 2}
+
+        for first_key, first_var, second_key, second_var in item_zip(first_dict , second_dict):
+            #prints first, 1
+            print(first_key, first_var)
+            #prints second, 2
+            print(second_key, second_var)'''
+    zipped = zip(*[cur_dict.items() for cur_dict in dicts_input])
+    return map(lambda x: (x[0][0], x[0][1], x[1][0], x[1][1]), zipped)
+
+__all__ = ("add_field", "check_field", "delete_field", "item_zip",)

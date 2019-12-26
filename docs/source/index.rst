@@ -87,6 +87,18 @@ Utils
 
 Changelogs
 ===========
+0.0.3
+------
+Added
+^^^^^^
+- Any attribute, including parent ones, that starts with underscore will be ignored.
+- :func:`~dataclass_dict.utils.item_zip` was added. It iterates between more than one
+  :class:`~dict`.
+
+Fixed
+^^^^^^
+- Now, indeed, anything started with underscore will be ignored.
+
 0.0.2
 ------
 Changed
