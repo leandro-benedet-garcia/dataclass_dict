@@ -6,7 +6,7 @@ from collections.abc import MutableMapping, KeysView
 from dataclasses import _FIELDS, _POST_INIT_NAME, _process_class, field, InitVar, dataclass
 from inspect import signature
 from json import loads
-from typing import Optional, Any, Dict, Union, Type, List, Callable
+from typing import Optional, Any, Dict, Union, Type, List, Callable, Mapping
 
 from .threaded_request import load_json_from_url
 from .utils import *
@@ -76,7 +76,8 @@ class DataclassDict(MutableMapping, KeysView):
             if key.start is None:
                 generated_range = range(key.stop)
             else:
-                generated_range = range(key.start, key.stop if key.stop is not None else 0,
+                generated_range = range(key.start,
+                                        key.stop if key.stop is not None else 0,
                                         key.step if key.step is not None else 1)
 
             for curr_key in generated_range:
@@ -97,7 +98,7 @@ class DataclassDict(MutableMapping, KeysView):
         if key[0] != "_" and key not in self:
             field_type = type(value)
             # pylint: disable=no-member
-            if key not in self.__dataclass_fields__:
+            if key not in getattr(self, _FIELDS):
                 created_field = field()
                 created_field.name = key
 
@@ -107,7 +108,7 @@ class DataclassDict(MutableMapping, KeysView):
                 created_field.type = field_type
 
                 # pylint: disable=no-member
-                self.__dataclass_fields__[key] = created_field
+                getattr(self, _FIELDS)[key] = created_field
 
             if key not in self.__annotations__:
                 self.__annotations__[key] = field_type
@@ -120,18 +121,27 @@ class DataclassDict(MutableMapping, KeysView):
     @property
     def _mapping(self):
         # pylint: disable=no-member
-        return list(self.__dataclass_fields__)
+        return list(getattr(self, _FIELDS))
 
     @staticmethod
     def create_new(*args, **kwargs):
         return create_dataclass_dict(*args, **kwargs)
 
     @staticmethod
-    def from_json(json_input):
+    def from_json(json_input: str):
         return dataclass_from_json(json_input)
 
+    def update_from_json(self, json_input: str):
+        '''
+        Exactly like :meth:`~dict.update` but it loads data from a json string.
 
-def create_dataclass_dict(input_dict=None, **kwargs):
+        :param json_input: The input json string.'''
+        created_data = dataclass_from_json(json_input)
+        created_data.update(self)
+        return created_data
+
+
+def create_dataclass_dict(input_dict: Mapping = None, **kwargs):
     if not input_dict:
         input_dict = dict(**kwargs)
 

@@ -7,10 +7,6 @@ import sys
 
 import setuptools
 
-
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(CURRENT_DIR, "src"))
-
 try:
     #pylint: disable=import-error
     from sphinx.setup_command import BuildDoc
@@ -18,14 +14,22 @@ try:
 except ImportError:
     SPHINX_LOADED = False
 
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+INSTALL_REQUIRES = []
 NAME = 'dataclass_dict'
+
+sys.path.append(os.path.join(CURRENT_DIR, "src"))
+
 
 def open_file(file_name):
     with open(file_name, "r") as file_handle:
         return file_handle.read()
 
+
 def stripped_file(file_name):
     return open_file(file_name).strip().split("\n")
+
 
 def find_version():
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -34,12 +38,17 @@ def find_version():
     return version_match.group(1)
 
 
-if SPHINX_LOADED:
-    CMDCLASS = {'build_sphinx': BuildDoc}
-
 __version__ = find_version()
 
-INSTALL_REQUIRES = []
+LONG_DESCRIPTION = open_file("README.md")
+LICENSE = open_file("LICENSE")
+
+TEST_PACKAGES = stripped_file("requirements-tests.txt")
+REQUIREMENTS_DOCS = stripped_file("requirements-docs.txt")
+
+
+if SPHINX_LOADED:
+    CMDCLASS = {'build_sphinx': BuildDoc}
 
 if sys.version_info < (3, 6):
     raise type("InvalidVersionError", (Exception,), {})("You must use python 3.6 or more to be "
@@ -51,11 +60,6 @@ if sys.version_info >= (3, 6) and sys.version_info < (3, 7):
 if sys.version_info >= (3, 6) and sys.version_info < (3, 8):
     INSTALL_REQUIRES.append("typing-extensions")
 
-LONG_DESCRIPTION = open_file("README.md")
-LICENSE = open_file("LICENSE")
-
-TEST_PACKAGES = stripped_file("requirements-tests.txt")
-REQUIREMENTS_DOCS = stripped_file("requirements-docs.txt")
 
 setuptools.setup(
     name=NAME,
@@ -72,29 +76,36 @@ setuptools.setup(
     python_requires=">=3.6",
     url="https://github.com/Cerberus1746/" + NAME,
     tests_require=["pytest-runner"],
-    packages=["src/" + NAME,],
+    packages=setuptools.find_packages(where='src'),  # Required
+    package_dir={'': 'src'},
     extras_require={
         'tests': TEST_PACKAGES,
         'docs': REQUIREMENTS_DOCS
     },
     include_package_data=True,
     classifiers=[
+        "Programming Language :: Python :: 3 :: Only",
+
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+
         "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
 
         "License :: OSI Approved :: MIT License",
 
         "Operating System :: OS Independent",
 
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 4 - Beta",
 
         "Intended Audience :: Developers",
 
         "Topic :: Software Development",
         "Topic :: Software Development :: Libraries",
+
         "Topic :: Utilities",
+        "Topic :: Internet"
     ],
     command_options={
         'build_sphinx': {

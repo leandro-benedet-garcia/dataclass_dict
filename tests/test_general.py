@@ -2,8 +2,7 @@
 # pylint: disable=protected-access
 '''
 :created: 18-07-2019
-:author: Leandro (Cerberus1746) Benedet Garcia
-'''
+:author: Leandro (Cerberus1746) Benedet Garcia'''
 from dataclasses import field, InitVar
 import json
 import os
@@ -18,8 +17,10 @@ from dataclass_dict import(DataclassDict, delete_field, add_field, create_datacl
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 SIMPLE_DATA = "raws/simple_data.json"
 
+
 with open(os.path.join(CURRENT_PATH, SIMPLE_DATA), "r") as cur_file:
     BASE_JSON = cur_file.read()
+
 
 TESTING_VALUES: Dict[str, Any] = json.loads(BASE_JSON)
 
@@ -30,7 +31,7 @@ FOURTH_VALUE: int = 10
 
 NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
 
-def test_iterzip():
+def test_itemzip():
     first_dict = {"first": 1}
     second_dict = {"second": 2}
 
@@ -40,6 +41,7 @@ def test_iterzip():
 
         assert second_key == "second"
         assert second_var == 2
+
 
 def test_iter_field():
     iter_list = ["Foo", "Bar"]
@@ -63,6 +65,18 @@ def test_json_input():
     instanced = DataclassDict.from_json(BASE_JSON)
     mapping_test(instanced)
 
+def test_update_from_json():
+    instanced = DataclassDict.create_new({
+        "hai": "hello",
+        "some_key": "some_value"
+    })
+    instanced = instanced.update_from_json(BASE_JSON)
+
+    assert "name" in instanced
+    assert instanced["name"] == "testing"
+
+    assert "cur_value" in instanced
+    assert instanced["cur_value"] == 10
 
 def test_dict_input():
     instanced = DataclassDict.create_new(TESTING_VALUES)
@@ -72,6 +86,7 @@ def test_dict_input():
 def test_simple_input():
     instanced = DataclassDict.create_new(**TESTING_VALUES)
     mapping_test(instanced)
+
 
 def test_ignore_underline():
     class BaseDictWithPost(DataclassDict):
@@ -94,6 +109,7 @@ def test_ignore_underline():
     assert hasattr(instanced, "_new_hidden")
     assert instanced._new_hidden == "still_hidden"
     assert "_new_hidden" not in instanced
+
 
 @pytest.mark.skip(reason="This test fails with Pypy version 7.1")
 def test_mappings_with_post_init():

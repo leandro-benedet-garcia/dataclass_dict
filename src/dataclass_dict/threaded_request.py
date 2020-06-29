@@ -24,7 +24,7 @@ class ThreadedGetData(Thread):
 
         self.started = False
         self.already_run = False
-        ThreadedGetData.registered_threads.append(self)
+        type(self).registered_threads.append(self)
         super().__init__(**kwargs)
 
     @classmethod
@@ -40,17 +40,20 @@ class ThreadedGetData(Thread):
         cls.registered_threads = []
 
     def run(self):
+        cur_type = type(self)
+
         self.started = True
         self.already_run = True
-        ThreadedGetData.open_threads.append(self)
+
+        cur_type.open_threads.append(self)
 
         self.data = urlopen(self.url)
 
         self.started = False
-        ThreadedGetData.open_threads.remove(self)
+        cur_type.open_threads.remove(self)
 
     def from_json(self, **kwargs):
-        'Transform json data into a dictionary'
+        'Transform json data into a :class:`~dataclass_dict.DataclassDict`'
         return json.load(self.data, **kwargs)
 
 
