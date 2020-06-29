@@ -70,6 +70,7 @@ def item_zip(*dicts_input):
 
 def valid_variable(name):
     '''Check if string is a valid keyword name
+
     :param name: the string to be checked'''
     return name.isidentifier() and not iskeyword(name)
 
