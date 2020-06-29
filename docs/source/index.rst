@@ -87,6 +87,13 @@ Utils
 
 Changelogs
 ===========
+0.0.4
+------
+Fixed
+^^^^^^
+- Now, the package should be able to be isntalled normally. The package name was being identified as
+  src
+
 0.0.3
 ------
 Added
