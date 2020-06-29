@@ -87,6 +87,12 @@ Utils
 
 Changelogs
 ===========
+0.0.6
+------
+Changed
+^^^^^^
+- The software will now tell which variable has a invalid name.
+
 0.0.5
 ------
 Added
