@@ -93,7 +93,7 @@ Added
 ^^^^^^
 - If the creation dictionary have a string that is not a valid variable name, it will raise an 
   :class:`~AssertionError`
-- :func:`~dataclass_dict.utils.item_zip` was added
+- :func:`~dataclass_dict.utils.valid_variable` was added
 
 0.0.4
 ------
