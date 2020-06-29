@@ -31,6 +31,11 @@ FOURTH_VALUE: int = 10
 
 NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
 
+def test_invalid_variable_name():
+    with pytest.raises(AssertionError):
+        create_dataclass_dict({"10": 10})
+
+
 def test_itemzip():
     first_dict = {"first": 1}
     second_dict = {"second": 2}

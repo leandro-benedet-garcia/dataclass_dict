@@ -5,6 +5,8 @@
 from dataclasses import _FIELDS, _get_field
 from typing import Optional, Any, Type
 
+from keyword import iskeyword
+
 
 def add_field(dataclass_instance: object, field_name: str, field_type: Type[Any],
               field_value: Optional[Any] = None):
@@ -65,4 +67,10 @@ def item_zip(*dicts_input):
     zipped = zip(*[cur_dict.items() for cur_dict in dicts_input])
     return map(lambda x: (x[0][0], x[0][1], x[1][0], x[1][1]), zipped)
 
-__all__ = ("add_field", "check_field", "delete_field", "item_zip",)
+
+def valid_variable(name):
+    '''Check if string is a valid keyword name
+    :param name: the string to be checked'''
+    return name.isidentifier() and not iskeyword(name)
+
+__all__ = ("add_field", "check_field", "delete_field", "item_zip", "valid_variable")

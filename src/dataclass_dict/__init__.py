@@ -24,6 +24,7 @@ class DataclassDict(MutableMapping, KeysView):
         if not hasattr(cls, "__annotations__"):
             cls.__annotations__ = {}
         for cur_key, cur_value in kwargs.items():
+            assert valid_variable(cur_key), "the variable has a invalid name"
             cur_type = type(cur_value)
 
             if cur_key not in  cls.__annotations__:
