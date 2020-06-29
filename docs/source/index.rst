@@ -91,7 +91,7 @@ Changelogs
 ------
 Fixed
 ^^^^^^
-- Now, the package should be able to be isntalled normally. The package name was being identified as
+- Now, the package should be able to be installed normally. The package name was being identified as
   src
 
 0.0.3
