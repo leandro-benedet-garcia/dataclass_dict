@@ -1,5 +1,0 @@
-[MASTER]
-disable=missing-docstring,
-        too-many-arguments,
-        cyclic-import,
-        too-many-ancestors

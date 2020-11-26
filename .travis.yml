@@ -3,16 +3,15 @@ dist: "xenial"
 language: "python"
 
 before_install:
-    - pip install -U pip
-    - pip install -U tox-travis
-
-install:
-    - pip install -e .
+  - pip install -U pip
+  - pip install -U tox-travis
 
 python:
-    - pypy3
-    - 3.6
-    - 3.7
+  - pypy3
+  - 3.6
+  - 3.7
+  - 3.8
+  - 3.9
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -20,17 +19,17 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-    - tox
+  - tox
 
 after_script:
   - ./cc-test-reporter format-coverage coverage.xml -t coverage.py
   - ./cc-test-reporter upload-coverage
 
 deploy:
-    provider: "pypi"
-    distributions: "sdist bdist_wheel"
-    user: "cerberus1746"
-    skip_existing: true
-    edge: true
-    on:
-        tags: true
+  provider: "pypi"
+  distributions: "sdist bdist_wheel"
+  user: "cerberus1746"
+  skip_existing: true
+  edge: true
+  on:
+    tags: true

@@ -87,6 +87,12 @@ Utils
 
 Changelogs
 ===========
+0.0.7
+------
+Changed
+^^^^^^
+- Improved packaging, coverage, tox and tests
+
 0.0.6
 ------
 Changed
@@ -97,7 +103,7 @@ Changed
 ------
 Added
 ^^^^^^
-- If the creation dictionary have a string that is not a valid variable name, it will raise an 
+- If the creation dictionary have a string that is not a valid variable name, it will raise an
   :class:`~AssertionError`
 - :func:`~dataclass_dict.utils.valid_variable` was added
 

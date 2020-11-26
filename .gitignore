@@ -1,0 +1,29 @@
+# Cache
+__pycache__
+.mypy_cache
+.ipynb_checkpoints/
+
+
+# Python stuff
+.tox
+.venv
+.coverage/
+Pipfile.lock
+
+
+# IDE
+.env
+.vscode
+generic_lexer.code-workspace
+
+
+# Docs
+docs/build
+docs/_build
+docs/cache
+docs/output
+
+# Package build
+src/dataclass_dict.egg-info/
+build/
+dist/

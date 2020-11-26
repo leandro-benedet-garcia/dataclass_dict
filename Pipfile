@@ -1,0 +1,10 @@
+[dev-packages]
+tox = "*"
+pytest = "*"
+pylama = "*"
+mypy = "*"
+jupyterlab = "*"
+ipykernel = "*"
+pytest-localserver = "*"
+sphinx_rtd_theme = "*"
+sphinx_autodoc_typehints = "*"

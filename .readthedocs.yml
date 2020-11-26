@@ -1,11 +1,10 @@
 version: 2
+formats: all
 
 sphinx:
     configuration: docs/source/conf.py
 
-formats: all
-
 python:
     version: 3
     install:
-        - requirements: requirements-docs.txt
+        - requirements: docs/requirements.txt

@@ -1,2 +1,0 @@
-dataclasses; sys.version_info >= (3, 6) and sys.version_info < (3, 7)
-typing-extensions; sys.version_info >= (3, 6) and sys.version_info < (3, 7)

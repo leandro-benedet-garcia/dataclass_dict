@@ -1,24 +1,20 @@
-# type: ignore[attr-defined]
-# pylint: disable=protected-access
 '''
 :created: 18-07-2019
 :author: Leandro (Cerberus1746) Benedet Garcia'''
-from dataclasses import field, InitVar
 import json
-import os
-from typing import MutableMapping, Dict, Any, Optional, List
+from dataclasses import InitVar, field
+from pathlib import Path
+from typing import Any, Dict, List, MutableMapping, Optional
 
 import pytest
 
-from dataclass_dict import(DataclassDict, delete_field, add_field, create_dataclass_dict,
-                           dataclass_from_url, item_zip)
+import dataclass_dict
+
+CURRENT_PATH = Path(__file__).parent
+SIMPLE_DATA = CURRENT_PATH / "raws" / "simple_data.json"
 
 
-CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
-SIMPLE_DATA = "raws/simple_data.json"
-
-
-with open(os.path.join(CURRENT_PATH, SIMPLE_DATA), "r") as cur_file:
+with SIMPLE_DATA.open() as cur_file:
     BASE_JSON = cur_file.read()
 
 
@@ -33,14 +29,16 @@ NEW_TEST_VALUES: List[Any] = TEST_VALUES + [SECOND_VALUE, THIRD_VALUE]
 
 def test_invalid_variable_name():
     with pytest.raises(AssertionError):
-        create_dataclass_dict({"10": 10})
+        dataclass_dict.create_dataclass_dict({"10": 10})
 
 
 def test_itemzip():
     first_dict = {"first": 1}
     second_dict = {"second": 2}
 
-    for first_key, first_var, second_key, second_var in item_zip(first_dict, second_dict):
+    for first_key, first_var, second_key, second_var in dataclass_dict.item_zip(
+        first_dict, second_dict
+    ):
         assert first_key == "first"
         assert first_var == 1
 
@@ -50,28 +48,28 @@ def test_itemzip():
 
 def test_iter_field():
     iter_list = ["Foo", "Bar"]
-    instance = create_dataclass_dict(names=iter_list)
-    assert instance.names == iter_list  # pylint: disable=no-member
+    instance = dataclass_dict.create_dataclass_dict(names=iter_list)
+    assert instance.names == iter_list
 
 
 def test_open_from_url(httpserver):
     httpserver.serve_content(BASE_JSON)
     server_url = httpserver.url
-    result = dataclass_from_url(server_url)
+    result = dataclass_dict.dataclass_from_url(server_url)
 
     mapping_test(result)
 
-    result = dataclass_from_url(server_url, server_url)
+    result = dataclass_dict.dataclass_from_url(server_url, server_url)
     for current in result:
         mapping_test(current)
 
 
 def test_json_input():
-    instanced = DataclassDict.from_json(BASE_JSON)
+    instanced = dataclass_dict.DataclassDict.from_json(BASE_JSON)
     mapping_test(instanced)
 
 def test_update_from_json():
-    instanced = DataclassDict.create_new({
+    instanced = dataclass_dict.DataclassDict.create_new({
         "hai": "hello",
         "some_key": "some_value"
     })
@@ -84,17 +82,17 @@ def test_update_from_json():
     assert instanced["cur_value"] == 10
 
 def test_dict_input():
-    instanced = DataclassDict.create_new(TESTING_VALUES)
+    instanced = dataclass_dict.DataclassDict.create_new(TESTING_VALUES)
     mapping_test(instanced)
 
 
 def test_simple_input():
-    instanced = DataclassDict.create_new(**TESTING_VALUES)
+    instanced = dataclass_dict.DataclassDict.create_new(**TESTING_VALUES)
     mapping_test(instanced)
 
 
 def test_ignore_underline():
-    class BaseDictWithPost(DataclassDict):
+    class BaseDictWithPost(dataclass_dict.DataclassDict):
         _name: str
 
     instanced = BaseDictWithPost()
@@ -108,7 +106,6 @@ def test_ignore_underline():
     assert instanced._name == "hidden"
     assert "_name" not in instanced
 
-    #pylint: disable=attribute-defined-outside-init
     instanced._new_hidden = "still_hidden"
 
     assert hasattr(instanced, "_new_hidden")
@@ -116,12 +113,11 @@ def test_ignore_underline():
     assert "_new_hidden" not in instanced
 
 
-@pytest.mark.skip(reason="This test fails with Pypy version 7.1")
 def test_mappings_with_post_init():
     to_set_value: int = 9
     sum_result: int = TESTING_VALUES["cur_value"] + TESTING_VALUES["cur_value"]
 
-    class BaseDictWithPost(DataclassDict, dataclass_repr=True):
+    class BaseDictWithPost(dataclass_dict.DataclassDict, dataclass_repr=True):
         name: str
         cur_value: int
         auto_value: Optional[int] = field(init=False)
@@ -148,8 +144,7 @@ def test_mappings_with_post_init():
 
 
 def test_mappings_with_inherit():
-
-    class BaseDict(DataclassDict):
+    class BaseDict(dataclass_dict.DataclassDict):
         name: str
         cur_value: int
 
@@ -205,16 +200,16 @@ def mapping_test(instanced):
     # pylint: disable=len-as-condition
     assert len(instanced) == 0
 
-    add_field(instanced, "first", int, 10)
+    dataclass_dict.add_field(instanced, "first", int, 10)
     assert instanced["first"] == 10
     assert instanced.pop("invalid", False) is False
 
 
 def test_mapping_exceptions():
-    instanced: DataclassDict = create_dataclass_dict(TESTING_VALUES)
+    instanced: dataclass_dict.DataclassDict = dataclass_dict.create_dataclass_dict(TESTING_VALUES)
 
     with pytest.raises(TypeError):
-        DataclassDict(**TESTING_VALUES)
+        dataclass_dict.DataclassDict(**TESTING_VALUES)
 
     with pytest.raises(IndexError):
         # pylint: disable=pointless-statement
@@ -225,4 +220,4 @@ def test_mapping_exceptions():
         instanced["invalid"]
 
     with pytest.raises(KeyError):
-        delete_field(instanced, "invalid")
+        dataclass_dict.delete_field(instanced, "invalid")
