@@ -140,17 +140,12 @@ Fixed
 - If a class inherited :class:`~dataclass_dict.DataclassDict` and it didn't have a field with
   annotations, it would raise an error. That's fixed now.
 
-0.0.1.1
-------
-Added
-^^^^^^
-- Added Tidelif information in the readme
-Fixed
-^^^^^^
-- Fixed informations in the `setup.py` file such as descriptions and repository link.
-
 0.0.1
 ------
 Added
 ^^^^^^
 - Package released
+- Added Tidelif information in the readme
+Fixed
+^^^^^^
+- Fixed informations in the `setup.py` file such as descriptions and repository link.
